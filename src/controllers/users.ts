@@ -2,12 +2,6 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import User from '../models/user';
 
-interface CustomRequest extends Request {
-    user?: {
-        _id: string;
-    };
-}
-
 export const getUsers = (req: Request, res: Response) => User.find({})
   .then((users) => res.send({ data: users }))
   .catch((err) => res.status(500).send({ message: err.message }));
@@ -22,7 +16,7 @@ export const createUser = (req: Request, res: Response) => {
       req.body.password = hash;
       const user = new User(req.body);
       user.save()
-        .then((user) => res.send({ data: user }))
+        .then((user) => res.status(201).send({ data: user }))
         .catch((err) => {
           if (err.name === 'CastError') {
             return res.status(400).send({
@@ -40,7 +34,7 @@ export const createUser = (req: Request, res: Response) => {
     .catch((err) => res.status(400).send(err));
 };
 
-export const changeProfile = (req: CustomRequest, res: Response) => {
+export const changeProfile = (req: Request, res: Response) => {
   const userId = req.user?._id;
 
   const { name, about } = req.body;
@@ -73,7 +67,7 @@ export const changeProfile = (req: CustomRequest, res: Response) => {
     });
 };
 
-export const changeProfileAvatar = (req: CustomRequest, res: Response) => {
+export const changeProfileAvatar = (req: Request, res: Response) => {
   const userId = req.user?._id;
   const { avatar } = req.body;
   return User.findByIdAndUpdate(

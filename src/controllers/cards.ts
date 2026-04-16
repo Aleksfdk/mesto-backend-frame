@@ -9,7 +9,7 @@ export const getCards = (req: Request, res: Response) => Card.find({})
 export const createCard = (req: Request, res: Response) => {
   const card = new Card(req.body);
   card.save()
-    .then((card) => res.send({ data: card }))
+    .then((card) => res.status(201).send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
         return res.status(400).send({
